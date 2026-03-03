@@ -1,0 +1,24 @@
+name: Environments & Protection
+on: [workflow_dispatch]
+
+jobs:
+  deploy-staging:
+    # This tells GitHub to use the 'Staging' vault
+    environment: Staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Staging
+        run: |
+          echo "Connecting to: ${{ vars.DB_URL }}"
+          node -e "console.log('Staging deployment initialized...')"
+
+  deploy-production:
+    # This job only starts AFTER deploy-staging succeeds
+    needs: deploy-staging
+    # This tells GitHub to use the 'Production' vault (and triggers the reviewer gate)
+    environment: Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Production
+        run: |
+          echo "Connecting to: ${{ vars.DB_URL }}"
